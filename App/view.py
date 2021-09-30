@@ -25,8 +25,10 @@ import controller
 from DISClib.ADT import list as lt
 from time import process_time
 assert cf
-import sys
+import sys as sis
 from datetime import datetime
+from DISClib.ADT import map as mp
+
 default_limit = 1000
 sys.setrecursionlimit(default_limit*10)
 catalog = None
@@ -41,6 +43,7 @@ def printMenu():
     print ("5. REQ. 3: Clasificar las obras de un artista por técnica")
     print ("6. REQ. 4: Clasificar las obras por la nacionalidad de sus creadores.")
     print ("7. REQ. 5: Costo de transportar las obras de un departamento a otro")
+    print ("8. Las N obras mas antiguas de un medio específico")
     print ("0. Salir")
 
 #Iniciador de catalogos y carga de datos
@@ -300,6 +303,9 @@ while True:
         t2 = process_time()
         time = t2-t1
         print("---"+str(time))
+    elif int(inputs[0]) == 8:
+        medio = input("Digite el medio a evaluar: ")
+        controller.nmasantiguas(catalog, medio)
     else:
         sys.exit(0)
 sys.exit(0)

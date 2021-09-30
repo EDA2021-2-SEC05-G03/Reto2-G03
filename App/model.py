@@ -43,16 +43,28 @@ def newCatalog(tipolista: str):
                'artworks': None,
                }
     catalog["artists"] = lt.newList(tipolista,cmpfunction= compareartists)
-    catalog["artworks"] = lt.newList(tipolista)
-    return catalog
+    catalog["artworks"] = mp.newMap(numelements = 10000, maptype="CHAINING", loadfactor= 4.0, comparefunction= comparemedium )
+    return catalog 
 
 # Funciones para agregar informacion al catalogo
 def addArtwork(catalog, artwork):  
-    lt.addLast(catalog["artworks"], artwork)
+    mp.put(catalog["artworks"], artwork["Medium"], artwork)
 def addArtists(catalog,artist):
     lt.addLast(catalog["artists"], artist)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+def comparemedium(id, entry):
+    """
+    Compara dos ids de libros, id es un identificador
+    y entry una pareja llave-valor
+    """
+    identry = me.getKey(entry)
+    if id == identry:
+        return 0
+    elif id > identry:
+        return 1
+    else:
+        return -1
 def compareartists(artistname1, artist):
     if (artistname1.lower() in artist['ConstituentID'].lower()):
         return 0
@@ -341,7 +353,12 @@ def countNat(lista):
             lt.deleteElement(tamaño_n, posicion+1)
             lt.insertElement(tamaño_n, x, posicion+1)
     return tamaño_n
-
+def nmasantiguas(catalog, medio):
+    x= mp.get(catalog["artworks"], medio)
+    x = me.getValue(x)
+    print (x)
+    x = ms.sort(x,cmpfunctionantiguedad)
+    return x
 def topNat(lst):
     
     num = lt.newList(datastructure = "ARRAY_LIST")

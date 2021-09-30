@@ -38,6 +38,7 @@ def loadArtwork(catalog):
     input_file = csv.DictReader(open(awfile, encoding ="utf-8"))
     for aw in input_file:
         model.addArtwork(catalog, aw)
+    
 def loadArtists(catalog):
     artistfile = cf.data_dir + "Artists-utf8-small.csv"
     input_file = csv.DictReader(open(artistfile, encoding ="utf-8"))
@@ -65,3 +66,5 @@ def countNat(catalog):
     return model.countNat(catalog)
 def topNat(num):
     return model.topNat(num)
+def nmasantiguas(catalog, medio):
+    return model.nmasantiguas(catalog, medio)
