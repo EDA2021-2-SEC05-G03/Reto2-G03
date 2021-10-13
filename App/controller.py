@@ -25,14 +25,15 @@ import model
 import csv
 
 # Inicialización del Catálogo de libros
-def initCatalog(tipolista : str):
-    catalog = model.newCatalog(tipolista)
+def initCatalog():
+    catalog = model.newCatalog()
     return catalog
     
 # Funciones para la carga de datos
 def loadData(catalog):
     loadArtwork(catalog)
     loadArtists(catalog)
+
 def loadArtwork(catalog):
     awfile = cf.data_dir + "Artworks-utf8-small.csv"
     input_file = csv.DictReader(open(awfile, encoding ="utf-8"))
@@ -47,5 +48,3 @@ def loadArtists(catalog):
 
 #Funciones de requerimientos y ordenamientos
 
-def nmasantiguas(catalog, medio):
-    return model.nmasantiguas(catalog, medio)

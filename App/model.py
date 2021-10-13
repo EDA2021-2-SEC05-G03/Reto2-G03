@@ -38,44 +38,39 @@ from datetime import datetime
 import time
 
 # Construccion de modelos
-def newCatalog(tipolista: str):
+def newCatalog():
     catalog = {'artists': None,
                'artworks': None,
                }
-    catalog["artists"] = lt.newList(tipolista,cmpfunction= compareartists)
-    catalog["artworks"] = mp.newMap(numelements = 10000, maptype="CHAINING", loadfactor= 4.0, comparefunction= comparemedium )
+    catalog["artists"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 )
+    catalog["artworks"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 )
+    catalog["Medios"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 )
+    catalog["Nacionalidades"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 )
     return catalog 
 
-# Funciones para agregar informacion al catalogo
-def addArtwork(catalog, artwork):  
-    mp.put(catalog["artworks"], artwork["Medium"], artwork)
+# Funciones para agregar informacion a los catalogos
 def addArtists(catalog,artist):
-    lt.addLast(catalog["artists"], artist)
+    mp.put(catalog["artists"], artist["ConstituentID"], artist)
+
+def addArtworks(catalog,artwork):
+    mp.put(catalog["artists"], artwork["ObjectID"], artwork)
+
+    
+def addMeduim(catalog, artwork):  
+    presente = mp.contains(catalog["Medios"], artwork["Medium"])
+    if not presente:
+        lista = lt.newList()
+        lt.addLast(lista, artwork["Title"])
+        mp.put(catalog["Medios"], artwork["Medium"], lista)
+    else:
+        lista = mp.get(catalog["Medios"], artwork["Medium"])["value"]
+        lt.addLast(lista, artwork["Title"])
+        mp.put(catalog["Medios"], artwork["Medium"], lista)
+
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
-def comparemedium(id, entry):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
-    identry = me.getKey(entry)
-    if id == identry:
-        return 0
-    elif id > identry:
-        return 1
-    else:
-        return -1
-        
-def compareartists(artistname1, artist):
-    if (artistname1.lower() in artist['ConstituentID'].lower()):
-        return 0
-    return 1
+
 
 #Funciones de los requerimientos
 
-def nmasantiguas(catalog, medio):
-    x= mp.get(catalog["artworks"], medio)
-    x = me.getValue(x)
-    print (x)
-    x = ms.sort(x,cmpfunctionantiguedad)
-    return x

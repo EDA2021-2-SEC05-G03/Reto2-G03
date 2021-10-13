@@ -47,8 +47,8 @@ def printMenu():
     print ("0. Salir")
 
 #Iniciador de catalogos y carga de datos
-def initCatalog(tipolista: str):
-    return controller.initCatalog(tipolista)
+def initCatalog():
+    return controller.initCatalog()
 def loadData(catalog):
     controller.loadData(catalog)
 
@@ -60,27 +60,16 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print ("Escoja el tipo de lista que quiere utilizar: ")
-        print ("1. Array List.\n2. Single Linked")
-        num = int(input("Digite el número de estructura de la lista escogido: "))
-        if num == 1:
-            tipolista = "ARRAY_LIST"
-        else:
-            tipolista = "SINGLE_LINKED"
         print("Cargando información de los archivos ....")
         t1 = process_time()
-        catalog = initCatalog(tipolista)
+        catalog = initCatalog()
         loadData(catalog)
-        print('Artistas cargados: ' + str(lt.size(catalog['artists'])))
-        print('Obras cargadas: ' + str(lt.size(catalog['artworks']))) 
+     
         t2 = process_time()
         time = t2-t1
         print("El tiempo para cargar los archivos fue de:", str(time) , "s")     
 
         
-    elif int(inputs[0]) == 8:
-        medio = input("Digite el medio a evaluar: ")
-        controller.nmasantiguas(catalog, medio)
     else:
         sys.exit(0)
 sys.exit(0)
