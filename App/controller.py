@@ -46,25 +46,6 @@ def loadArtists(catalog):
         model.addArtists(catalog, artist)
 
 #Funciones de requerimientos y ordenamientos
-def sortartworks(catalog,sizesublist,typeofsort):
-    return model.sortartworks(catalog,sizesublist,typeofsort)
-def sortartworks2(catalog,begin,end):
-    return model.sortartworks2(catalog,begin,end)
-def sortartistsDates(catalog,begin,end):
-    return model.sortartistsDates(catalog,begin,end)
-def artworksClasification(catalog, artista):
-    return model.Clasification(catalog,artista)
-def topMed(num):
-    return model.topMed(num)
-def info_medios(catalog,id,top):
-    return model.info_medios(catalog,id,top)
-def costotransporte(catalog,departamento):
-    return model.costotransporte(catalog,departamento)
-def artworksNat(catalog):
-    return model.artworksNat(catalog)
-def countNat(catalog):
-    return model.countNat(catalog)
-def topNat(num):
-    return model.topNat(num)
+
 def nmasantiguas(catalog, medio):
     return model.nmasantiguas(catalog, medio)
