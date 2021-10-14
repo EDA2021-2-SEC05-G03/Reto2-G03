@@ -31,14 +31,10 @@ def initCatalog():
     
 # Funciones para la carga de datos
 def loadData(catalog):
-    loadArtwork(catalog)
     loadArtists(catalog)
+    loadArtworks(catalog)
 
-def loadArtwork(catalog):
-    awfile = cf.data_dir + "Artworks-utf8-small.csv"
-    input_file = csv.DictReader(open(awfile, encoding ="utf-8"))
-    for aw in input_file:
-        model.addArtwork(catalog, aw)
+
     
 def loadArtists(catalog):
     artistfile = cf.data_dir + "Artists-utf8-small.csv"
@@ -46,5 +42,21 @@ def loadArtists(catalog):
     for artist in input_file:
         model.addArtists(catalog, artist)
 
+def loadArtworks(catalog):
+    awfile = cf.data_dir + "Artworks-utf8-small.csv"
+    input_file = csv.DictReader(open(awfile, encoding ="utf-8"))
+    for aw in input_file:
+        model.addArtworks(catalog, aw)
+        model.addMedium(catalog, aw)
+        model.fechas(catalog,aw)
+        
+
 #Funciones de requerimientos y ordenamientos
+
+def nacionalidad(catalog,nacionalidad):
+    return model.nacionalidad(catalog,nacionalidad)
+
+def obrasantiguas(cat, medio):
+    model.obrasantiguas(cat, medio)
+
 
