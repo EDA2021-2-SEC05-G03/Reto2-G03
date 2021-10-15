@@ -60,3 +60,6 @@ def obrasantiguas(cat, medio):
     model.obrasantiguas(cat, medio)
 
 
+def requerimiento2(catalog, begin1, begin2):
+    return model.requerimiento2(catalog, begin1, begin2)
+    

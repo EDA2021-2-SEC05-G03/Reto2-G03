@@ -37,8 +37,7 @@ catalog = None
 def printMenu():
     print ("Bienvenido")
     print ("1. Cargar archivos.")
-    print ("2. Clasificar por medios.")
-    print ("3. Obras mas viejas por nacionalidad.")
+    print ("2. Requerimiento 2: Listar cronológicamente los artistas.")
     print ("0. Salir")
 
 #Iniciador de catalogos y carga de datos
@@ -63,19 +62,13 @@ while True:
         time = t2-t1
         print("El tiempo para cargar los archivos fue de:", str(time) , "s")    
 
-    elif int(inputs[0]) == 2:         
-        medio = input("Ingrese el medio: ")     
-        t1 = process_time() 
-        antiguas = controller.obrasantiguas(catalog, medio)
-        t2 = process_time()
-        time = t2-t1
-        print("El tiempo para cargar los archivos fue de:", str(time) , "s")     
-
-    elif int(inputs[0])== 3:
-        print("Número total de obras por nacionalidad") 
-        nacionalidad = input ("Escriba la nacionalidad a evaluar: ")
-        tamaño = controller.nacionalidad(catalog, nacionalidad)
-        print (tamaño)
+    elif int(inputs[0]) == 2: 
+        begin1 = int(input("Digite el año de nacimiento inicial: "))
+        begin2 = int(input("Digite el año de nacimiento final: "))
+        respuestas = controller.requerimiento2(catalog, begin1, begin2)
+        print("El número total de artistas que nacieron en ese rango de fechas fue de " + str(respuestas[0]))
+        for i in lt.iterator(respuestas[1]):
+            print(i["DisplayName"])
 
         
     else:

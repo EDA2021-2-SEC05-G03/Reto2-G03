@@ -47,6 +47,7 @@ def newCatalog():
     catalog["Medios"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 )
     catalog["Nacionalidades"] = mp.newMap(numelements = 400, maptype="PROBING", loadfactor= 0.75 )
     catalog["Obras"] = mp.newMap(numelements = 200, maptype="PROBING", loadfactor= 0.80 )
+    catalog["NacimientoArtistas"] = mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5)
     return catalog 
 
 # Funciones para agregar informacion a los catalogos
@@ -55,6 +56,7 @@ def addArtists(catalog,artist):
     artist["Obras"] = obras
     mp.put(catalog["artists"], artist["ConstituentID"], artist)
     addNationalitys(catalog,artist)
+    addBeginDate(catalog,artist)
     
 def fechas(catalog, artwork):
     mp.put(catalog["Obras"], artwork["Title"], artwork["Date"])
@@ -98,6 +100,16 @@ def addNationalitys(catalog, artist):
         lt.addLast(lista, artist["ConstituentID"])
         mp.put(catalog["Medios"], artist["Nationality"], lista)
 
+def addBeginDate(catalog,artist):
+    presente = mp.contains(catalog["NacimientoArtistas"], int(artist["BeginDate"]))
+    if not presente:
+        lista = lt.newList(datastructure="ARRAY_LIST")
+        lt.addLast(lista,artist)
+        mp.put(catalog["NacimientoArtistas"], int(artist["BeginDate"]),lista)
+    else:
+        lista = mp.get(catalog["NacimientoArtistas"], int(artist["BeginDate"]))["value"]
+        lt.addLast(lista,artist)
+        mp.put(catalog["NacimientoArtistas"],int(artist["BeginDate"]),lista)
 
 
 
@@ -156,4 +168,24 @@ def cmpfun(date1,date2):
 
     return int(date1) < int(date2)
 
+def cmpfunctionrequerimiento2(date1,date2):
+    date1 = int(date1["BeginDate"])
+    date2 = int(date2["BeginDate"])
+    return date1 < date2
 
+def requerimiento2(catalog, begin1, begin2):
+    listaartistas= lt.newList(datastructure="ARRAY_LIST")
+    for año in range(begin1,(begin2+1)):
+        listaartistasmp=mp.get(catalog["NacimientoArtistas"], año,)["value"]
+        for agregar in lt.iterator(listaartistasmp):
+            lt.addLast(listaartistas,agregar)
+    numerototaldeartistas = lt.size(listaartistas)
+    listaartistas = ms.sort(listaartistas,cmpfunctionrequerimiento2)
+    sublista1 = lt.subList(listaartistas,1,3)
+    sublista2 = lt.subList(listaartistas,(numerototaldeartistas-2),3)
+    listarespuesta3y3 = lt.newList(datastructure="ARRAY_LIST")
+    for artista in lt.iterator(sublista1):
+        lt.addLast(listarespuesta3y3,artista)
+    for artista in lt.iterator(sublista2):
+        lt.addLast(listarespuesta3y3,artista)
+    return (numerototaldeartistas,listarespuesta3y3)
