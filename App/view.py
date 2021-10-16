@@ -37,7 +37,11 @@ catalog = None
 def printMenu():
     print ("Bienvenido")
     print ("1. Cargar archivos.")
-    print ("2. Requerimiento 2: Listar cronológicamente los artistas.")
+    print ("2. Requerimiento 1: Listar cronológicamente los artistas.")
+    print ("3. Requerimiento 2: Listar cronológicamente las adquisiciones.")
+    print ("4. Requerimiento 3: Clasificar las obras de un artista por técnica.")
+    print ("5. Requerimiento 4: Clasificar las obras por la nacionalidad de sus artistas.")
+    print ("6. Requerimiento 5: Transportar obras de un departamento.")
     print ("0. Salir")
 
 #Iniciador de catalogos y carga de datos
@@ -65,10 +69,22 @@ while True:
     elif int(inputs[0]) == 2: 
         begin1 = int(input("Digite el año de nacimiento inicial: "))
         begin2 = int(input("Digite el año de nacimiento final: "))
-        respuestas = controller.requerimiento2(catalog, begin1, begin2)
+        respuestas = controller.requerimiento1(catalog, begin1, begin2)
         print("El número total de artistas que nacieron en ese rango de fechas fue de " + str(respuestas[0]))
         for i in lt.iterator(respuestas[1]):
             print(i["DisplayName"])
+
+    elif int(inputs[0]) == 3:
+        begin = input("Digite la fecha en formato YYYY-MM-DD: ")
+        end = input("Digite la fecha en formato YYYY-MM-DD: ")
+        respuestas = controller.requerimiento2(catalog,begin,end)
+        print("El número total de obras en el rango deseado es de: " + str(respuestas[0]))
+        print("Las obras adquiridas por Purchase es de: " + str(respuestas[1]))
+        for i in lt.iterator(respuestas[2]):
+            print(i["Title"])
+
+    elif int(inputs[0]) == 5:
+        respuestas = controller.requerimiento4(catalog)
 
         
     else:

@@ -49,17 +49,21 @@ def loadArtworks(catalog):
         model.addArtworks(catalog, aw)
         model.addMedium(catalog, aw)
         model.fechas(catalog,aw)
+        model.addDateAcquired(catalog,aw)
         
 
 #Funciones de requerimientos y ordenamientos
 
-def nacionalidad(catalog,nacionalidad):
-    return model.nacionalidad(catalog,nacionalidad)
+def requerimiento4(catalog,nacionalidad):
+    return model.requerimiento4(catalog)
 
 def obrasantiguas(cat, medio):
     model.obrasantiguas(cat, medio)
 
 
-def requerimiento2(catalog, begin1, begin2):
-    return model.requerimiento2(catalog, begin1, begin2)
+def requerimiento1(catalog, begin1, begin2):
+    return model.requerimiento1(catalog, begin1, begin2)
+
+def requerimiento2(catalog,begin,end):
+    return model.requerimiento2(catalog,begin,end)
     

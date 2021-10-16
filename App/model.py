@@ -34,7 +34,7 @@ from DISClib.Algorithms.Sorting import shellsort as ss
 from DISClib.Algorithms.Sorting import insertionsort as ins
 from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.Algorithms.Sorting import quicksort as qs
-from datetime import datetime
+from datetime import date, datetime
 import time
 
 # Construccion de modelos
@@ -48,6 +48,7 @@ def newCatalog():
     catalog["Nacionalidades"] = mp.newMap(numelements = 400, maptype="PROBING", loadfactor= 0.75 )
     catalog["Obras"] = mp.newMap(numelements = 200, maptype="PROBING", loadfactor= 0.80 )
     catalog["NacimientoArtistas"] = mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5)
+    catalog["DateAcquired"] = mp.newMap(numelements= 191, maptype="PROBING", loadfactor= 0.5)
     return catalog 
 
 # Funciones para agregar informacion a los catalogos
@@ -106,29 +107,32 @@ def addBeginDate(catalog,artist):
         lista = lt.newList(datastructure="ARRAY_LIST")
         lt.addLast(lista,artist)
         mp.put(catalog["NacimientoArtistas"], int(artist["BeginDate"]),lista)
-    else:
+    else: 
         lista = mp.get(catalog["NacimientoArtistas"], int(artist["BeginDate"]))["value"]
         lt.addLast(lista,artist)
         mp.put(catalog["NacimientoArtistas"],int(artist["BeginDate"]),lista)
 
-
-
-
+def addDateAcquired(catalog, artwork):  
+    if artwork["DateAcquired"] == "":
+        artwork["DateAcquired"] = "0000"
+    presente = mp.contains(catalog["DateAcquired"], artwork["DateAcquired"][0:4])
+    if not presente:
+            lista = lt.newList(datastructure="ARRAY_LIST")
+            lt.addLast(lista, artwork)
+            mp.put(catalog["DateAcquired"], artwork["DateAcquired"][0:4], lista)
+    else:
+            lista = mp.get(catalog["DateAcquired"], artwork["DateAcquired"][0:4])["value"]
+            lt.addLast(lista, artwork)
+            mp.put(catalog["DateAcquired"], artwork["DateAcquired"][0:4],lista)
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 
 #Funciones de los requerimientos
 
-def nacionalidad(catalog, nacionalidad):
-    nacionalidad = mp.get(catalog["Nacionalidades"],nacionalidad)["value"]
-    tamañoobras= 0
-    for artista in lt.iterator(nacionalidad):
-        obras = mp.get(catalog["artists"],artista)["value"]
-        obras = obras["Obras"]
-        tamaño = lt.size(obras)
-        tamañoobras += tamaño
+def requerimiento4(catalog):
+    pass
 
-    return tamañoobras
+    return 
 
 def obrasantiguas(catalog, medio):
     medios = catalog["Medios"]
@@ -168,19 +172,19 @@ def cmpfun(date1,date2):
 
     return int(date1) < int(date2)
 
-def cmpfunctionrequerimiento2(date1,date2):
+def cmpfunctionrequerimiento1(date1,date2):
     date1 = int(date1["BeginDate"])
     date2 = int(date2["BeginDate"])
     return date1 < date2
 
-def requerimiento2(catalog, begin1, begin2):
+def requerimiento1(catalog, begin1, begin2):
     listaartistas= lt.newList(datastructure="ARRAY_LIST")
     for año in range(begin1,(begin2+1)):
-        listaartistasmp=mp.get(catalog["NacimientoArtistas"], año,)["value"]
+        listaartistasmp=mp.get(catalog["NacimientoArtistas"], año)["value"]
         for agregar in lt.iterator(listaartistasmp):
             lt.addLast(listaartistas,agregar)
     numerototaldeartistas = lt.size(listaartistas)
-    listaartistas = ms.sort(listaartistas,cmpfunctionrequerimiento2)
+    listaartistas = ms.sort(listaartistas,cmpfunctionrequerimiento1)
     sublista1 = lt.subList(listaartistas,1,3)
     sublista2 = lt.subList(listaartistas,(numerototaldeartistas-2),3)
     listarespuesta3y3 = lt.newList(datastructure="ARRAY_LIST")
@@ -189,3 +193,43 @@ def requerimiento2(catalog, begin1, begin2):
     for artista in lt.iterator(sublista2):
         lt.addLast(listarespuesta3y3,artista)
     return (numerototaldeartistas,listarespuesta3y3)
+
+def requerimiento2(catalog,begin,end):
+    beginyear = int(begin[0:4])
+    endyear= int(end[0:4])
+    begin = datetime.strptime(begin,"%Y-%m-%d")
+    end = datetime.strptime(end,"%Y-%m-%d")
+    listaobras = lt.newList(datastructure="ARRAY_LIST")
+    purchase = 0
+    for year in range(beginyear,endyear+1):
+        year = str(year)
+        presente = mp.contains(catalog["DateAcquired"],year)
+        if presente:
+            year= mp.get(catalog["DateAcquired"], year)["value"]
+            for obra in lt.iterator(year):
+                if datetime.strptime(obra["DateAcquired"], "%Y-%m-%d") >= begin and datetime.strptime(obra["DateAcquired"], "%Y-%m-%d") <= end:
+                    lt.addLast(listaobras,obra)
+                    acomparar = obra["CreditLine"].lower()
+                    acomparar = acomparar.find("purchase")
+                    if acomparar != -1:
+                        purchase += 1
+    totalobras = lt.size(listaobras)
+    listaobras = ms.sort(listaobras,cmpfunctionrequerimiento2)
+    sublista1 = lt.subList(listaobras,1,3)
+    sublista2 = lt.subList(listaobras,(totalobras-2),3)
+    listarespuesta3y3 = lt.newList(datastructure="ARRAY_LIST")
+    for artista in lt.iterator(sublista1):
+        lt.addLast(listarespuesta3y3,artista)
+    for artista in lt.iterator(sublista2):
+        lt.addLast(listarespuesta3y3,artista)
+    return (totalobras,purchase,listarespuesta3y3)
+
+    
+
+def cmpfunctionrequerimiento2(date1,date2):
+    date1 = datetime.strptime(date1["DateAcquired"], "%Y-%m-%d")
+    date2 = datetime.strptime(date2["DateAcquired"], "%Y-%m-%d")
+    return date1 < date2
+
+
+#artwork["DateAcquired"] = datetime.strptime(artwork["DateAcquired"], "%Y-%m-%d")
