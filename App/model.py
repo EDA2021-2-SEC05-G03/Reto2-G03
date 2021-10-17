@@ -147,6 +147,16 @@ def mediumartists(catalog, artworks):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
+def cmpfunctionrequerimiento1(date1,date2):
+    date1 = int(date1["BeginDate"])
+    date2 = int(date2["BeginDate"])
+    return date1 < date2
+
+def cmpfunctionrequerimiento2(date1,date2):
+    date1 = datetime.strptime(date1["DateAcquired"], "%Y-%m-%d")
+    date2 = datetime.strptime(date2["DateAcquired"], "%Y-%m-%d")
+    return date1 < date2
+
 def cmpfunctionrequerimiento3(med1,med2):
     return med1 > med2
 
@@ -195,11 +205,6 @@ def cmpfun(date1,date2):
 
     return int(date1) < int(date2)
 
-def cmpfunctionrequerimiento1(date1,date2):
-    date1 = int(date1["BeginDate"])
-    date2 = int(date2["BeginDate"])
-    return date1 < date2
-
 def requerimiento1(catalog, begin1, begin2):
     listaartistas= lt.newList(datastructure="ARRAY_LIST")
     for año in range(begin1,(begin2+1)):
@@ -246,11 +251,6 @@ def requerimiento2(catalog,begin,end):
     for artista in lt.iterator(sublista2):
         lt.addLast(listarespuesta3y3,artista)
     return (totalobras,purchase,listarespuesta3y3)
-  
-def cmpfunctionrequerimiento2(date1,date2):
-    date1 = datetime.strptime(date1["DateAcquired"], "%Y-%m-%d")
-    date2 = datetime.strptime(date2["DateAcquired"], "%Y-%m-%d")
-    return date1 < date2
 
 def requerimiento3(catalog,artist):
     id = mp.get(catalog["ids"], artist)["value"]   
