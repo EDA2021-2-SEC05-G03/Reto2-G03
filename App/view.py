@@ -83,6 +83,24 @@ while True:
         for i in lt.iterator(respuestas[2]):
             print(i["Title"])
 
+    elif int(inputs[0]) == 4: 
+        artist =  input("Ingrese el nombre del artista de las obras a clasificar: ")
+        info = controller.artworksClasification(catalog, artist)
+        s = mp.size(info[1])
+        print(str(artist) + " identificado con el ID " + str(info[0]) + " tiene un total de " + str(s) + " obras")      
+        topMeds = controller.topMeds(info[1])
+        orden = controller.orden(topMeds)
+        print("Tiene un total de " + str(orden[0]) + " medios diferentes")
+        print("Medio".center(50)+"|"+"Obras".center(9))
+        print("-"*60)
+        t = 0
+        while t < 10:
+            a = str(orden[1]["elements"][t])
+            b = str(orden[1]["elements"][t+1])
+            print(a.center(50)+"|"+b.center(9))
+            print("-"*60)
+            t+=2
+
     elif int(inputs[0]) == 5:
         respuestas = controller.requerimiento4(catalog)
 

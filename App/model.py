@@ -49,6 +49,8 @@ def newCatalog():
     catalog["Obras"] = mp.newMap(numelements = 200, maptype="PROBING", loadfactor= 0.80 )
     catalog["NacimientoArtistas"] = mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5)
     catalog["DateAcquired"] = mp.newMap(numelements= 191, maptype="PROBING", loadfactor= 0.5)
+    catalog["Medartist"]= mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5)
+    catalog["ids"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5)
     return catalog 
 
 # Funciones para agregar informacion a los catalogos
@@ -124,8 +126,29 @@ def addDateAcquired(catalog, artwork):
             lista = mp.get(catalog["DateAcquired"], artwork["DateAcquired"][0:4])["value"]
             lt.addLast(lista, artwork)
             mp.put(catalog["DateAcquired"], artwork["DateAcquired"][0:4],lista)
+
+def ids(catalog, artwork):
+    mp.put(catalog["ids"], artwork["DisplayName"], int(artwork["ConstituentID"]))
+
+def mediumartists(catalog, artworks):
+    ids = artworks["ConstituentID"].strip("[]")
+    ids = ids.split(",")
+    for i in ids:
+        i = i.strip()
+        presente = mp.contains(catalog["Medartist"], int(i))
+        if not presente:
+            lista = lt.newList(datastructure="ARRAY_LIST")
+            lt.addLast(lista, artworks["Medium"])
+            mp.put(catalog["Medartist"], int(i),lista)
+        else:
+            lista = mp.get(catalog["Medartist"], int(i))["value"]
+            lt.addLast(lista,artworks["Medium"])
+            mp.put(catalog["Medartist"], int(i), lista)
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
+def cmpfunctionrequerimiento3(med1,med2):
+    return med1 > med2
 
 #Funciones de los requerimientos
 
@@ -223,13 +246,46 @@ def requerimiento2(catalog,begin,end):
     for artista in lt.iterator(sublista2):
         lt.addLast(listarespuesta3y3,artista)
     return (totalobras,purchase,listarespuesta3y3)
-
-    
-
+  
 def cmpfunctionrequerimiento2(date1,date2):
     date1 = datetime.strptime(date1["DateAcquired"], "%Y-%m-%d")
     date2 = datetime.strptime(date2["DateAcquired"], "%Y-%m-%d")
     return date1 < date2
 
+def requerimiento3(catalog,artist):
+    id = mp.get(catalog["ids"], artist)["value"]   
+    meds = mp.get(catalog["Medartist"], id)["value"]
+    return(id,meds)
+   
+def topMeds(medios):
+    map = mp.newMap(numelements=50, maptype="PROBING", loadfactor= 0.5)
+    for i in lt.iterator(medios):
+        presente = mp.contains(map, i)
+        if not presente:
+            count = 1
+            mp.put(map, i,count)
+        else:
+            count = mp.get(map, i)["value"]
+            count += 1
+            mp.put(map, i,count)
+    return map
+
+def orden(map):
+    llaves = mp.keySet(map)
+    valores = mp.valueSet(map)
+    lista = lt.newList(datastructure="ARRAY_LIST")
+    size = mp.size(llaves)
+    sub = lt.subList(valores, 0, size)
+    orden = ms.sort(sub,cmpfunctionrequerimiento3)
+    for i in lt.iterator(orden):
+        
+        pos = lt.isPresent(valores, i)
+        key = lt.getElement(llaves,pos)
+        lt.addLast(lista, key)
+        lt.addLast(lista, i)
+
+        lt.deleteElement(valores, pos)
+        lt.deleteElement(llaves, pos)
+    return (size, lista) 
 
 #artwork["DateAcquired"] = datetime.strptime(artwork["DateAcquired"], "%Y-%m-%d")

@@ -67,3 +67,12 @@ def requerimiento1(catalog, begin1, begin2):
 def requerimiento2(catalog,begin,end):
     return model.requerimiento2(catalog,begin,end)
     
+def artworksClasification(catalog, artist):
+    return model.requerimiento3(catalog,artist)
+
+def topMeds(medios):
+    return model.topMeds(medios)
+
+def orden(top):
+    return model.orden(top)
+    
