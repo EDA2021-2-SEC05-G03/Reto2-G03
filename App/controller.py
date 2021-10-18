@@ -41,6 +41,8 @@ def loadArtists(catalog):
     input_file = csv.DictReader(open(artistfile, encoding ="utf-8"))
     for artist in input_file:
         model.addArtists(catalog, artist)
+        model.ids(catalog, artist)
+        model.Nat(catalog, artist)
 
 def loadArtworks(catalog):
     awfile = cf.data_dir + "Artworks-utf8-small.csv"
@@ -50,16 +52,17 @@ def loadArtworks(catalog):
         model.addMedium(catalog, aw)
         model.fechas(catalog,aw)
         model.addDateAcquired(catalog,aw)
+        model.mediumartists(catalog, aw)
+        model.NatArt(catalog, aw)
         
 
 #Funciones de requerimientos y ordenamientos
 
-def requerimiento4(catalog,nacionalidad):
+def requerimiento4(catalog):
     return model.requerimiento4(catalog)
 
 def obrasantiguas(cat, medio):
     model.obrasantiguas(cat, medio)
-
 
 def requerimiento1(catalog, begin1, begin2):
     return model.requerimiento1(catalog, begin1, begin2)

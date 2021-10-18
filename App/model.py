@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.arraylist import newList
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -51,6 +52,9 @@ def newCatalog():
     catalog["DateAcquired"] = mp.newMap(numelements= 191, maptype="PROBING", loadfactor= 0.5)
     catalog["Medartist"]= mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5)
     catalog["ids"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5)
+    catalog["Nat"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5)
+    catalog["ID"] = lt.newList(datastructure="ARRAY_LIST")
+    catalog["ArtNat"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5)
     return catalog 
 
 # Funciones para agregar informacion a los catalogos
@@ -75,9 +79,7 @@ def addArtworks(catalog,artwork):
         if presente:
             artistamap = mp.get(catalog["artists"],artista)["value"]
             lt.addLast(artistamap["Obras"], artwork)
-
-
-    
+  
 def addMedium(catalog, artwork):  
     presente = mp.contains(catalog["Medios"], artwork["Medium"])
     if not presente:
@@ -101,7 +103,7 @@ def addNationalitys(catalog, artist):
     else:
         lista = mp.get(catalog["Nacionalidades"], artist["Nationality"])["value"]
         lt.addLast(lista, artist["ConstituentID"])
-        mp.put(catalog["Medios"], artist["Nationality"], lista)
+        mp.put(catalog["Nacionalidades"], artist["Nationality"], lista)
 
 def addBeginDate(catalog,artist):
     presente = mp.contains(catalog["NacimientoArtistas"], int(artist["BeginDate"]))
@@ -127,8 +129,8 @@ def addDateAcquired(catalog, artwork):
             lt.addLast(lista, artwork)
             mp.put(catalog["DateAcquired"], artwork["DateAcquired"][0:4],lista)
 
-def ids(catalog, artwork):
-    mp.put(catalog["ids"], artwork["DisplayName"], int(artwork["ConstituentID"]))
+def ids(catalog, artist):
+    mp.put(catalog["ids"], artist["DisplayName"], int(artist["ConstituentID"]))
 
 def mediumartists(catalog, artworks):
     ids = artworks["ConstituentID"].strip("[]")
@@ -144,6 +146,62 @@ def mediumartists(catalog, artworks):
             lista = mp.get(catalog["Medartist"], int(i))["value"]
             lt.addLast(lista,artworks["Medium"])
             mp.put(catalog["Medartist"], int(i), lista)
+
+def Nat(catalog, artist):
+    n = artist["Nationality"]
+    if n == "" or n == None:
+        n = "Nationality unknown"
+        mp.put(catalog["Nat"], int(artist["ConstituentID"]), n)
+    else:
+        mp.put(catalog["Nat"], int(artist["ConstituentID"]), n)
+
+def NatArt(catalog, artworks):
+    lista = catalog["ID"]
+    ids = artworks["ConstituentID"].strip("[]")
+    ids = ids.split(",")   
+    for i in ids:
+        id = i.strip()
+        lt.addLast(lista, int(i))
+    
+def requerimiento4(catalog):
+    lista = catalog["ID"]
+    nat = catalog["Nat"]
+    for i in lt.iterator(lista):
+        n = mp.get(nat, i)["value"]
+        presente = mp.contains(catalog["ArtNat"], n)
+        if not presente:
+            lista = lt.newList(datastructure="ARRAY_LIST")          
+            lt.addLast(lista, i)
+            mp.put(catalog["ArtNat"], n,lista)
+        else:
+            lista = mp.get(catalog["ArtNat"], n)["value"]
+            lt.addLast(lista,i)
+            mp.put(catalog["ArtNat"], n, lista)    
+    valores = mp.valueSet(catalog["ArtNat"])
+    sizes = lt.newList("ARRAY_LIST")
+
+    for i in lt.iterator(valores):
+        size = i["size"]       
+        lt.addLast(sizes,size)
+    
+    orden = ms.sort(sizes, cmpfunctionrequerimiento3)
+    llaves = mp.keySet(catalog["ArtNat"])
+    s = lt.size(orden)  
+    s = lt.size(orden)
+    ret = lt.newList(datastructure="ARRAY_LIST")
+    num = 0  
+    while num < s:
+        for i in lt.iterator(llaves):
+            g = orden["elements"][num]                     
+            f = mp.get(catalog["ArtNat"],i)["value"]            
+            f = lt.size(f)
+            k = mp.get(catalog["ArtNat"],i)["key"]
+            
+            if f == g:               
+                lt.addLast(ret, k)
+                lt.addLast(ret, f)                       
+        num += 1
+    return ret
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -161,11 +219,6 @@ def cmpfunctionrequerimiento3(med1,med2):
     return med1 > med2
 
 #Funciones de los requerimientos
-
-def requerimiento4(catalog):
-    pass
-
-    return 
 
 def obrasantiguas(catalog, medio):
     medios = catalog["Medios"]

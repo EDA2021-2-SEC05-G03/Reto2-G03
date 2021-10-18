@@ -65,7 +65,7 @@ while True:
         t2 = process_time()
         time = t2-t1
         print("El tiempo para cargar los archivos fue de:", str(time) , "s")    
-
+    
     elif int(inputs[0]) == 2: 
         begin1 = int(input("Digite el año de nacimiento inicial: "))
         begin2 = int(input("Digite el año de nacimiento final: "))
@@ -82,7 +82,7 @@ while True:
         print("Las obras adquiridas por Purchase es de: " + str(respuestas[1]))
         for i in lt.iterator(respuestas[2]):
             print(i["Title"])
-
+        
     elif int(inputs[0]) == 4: 
         artist =  input("Ingrese el nombre del artista de las obras a clasificar: ")
         info = controller.artworksClasification(catalog, artist)
@@ -101,10 +101,18 @@ while True:
             print("-"*60)
             t+=2
 
-    elif int(inputs[0]) == 5:
+    elif int(inputs[0]) == 5:        
         respuestas = controller.requerimiento4(catalog)
+        print("Nationality".center(30)+"|"+"Artworks".center(7))
+        print("-"*39)
+        t = 0
+        while t < 20:
+            a = str(respuestas["elements"][t])
+            b = str(respuestas["elements"][t+1])
+            print(a.center(30)+"|"+ b.center(7))
+            print("-"*39)
+            t+=2
 
-        
     else:
         sys.exit(0)
 sys.exit(0)
