@@ -120,7 +120,16 @@ while True:
             t+=2
 
         c = controller.printNats(catalog, respuestas["elements"][0])
-
+    
+    elif int(inputs[0]) == 6:
+        department = input("Digite el departamento a evaluar: ")
+        respuesta = controller.requerimiento5(catalog,department)
+        print ("El tamaño del departamento es de " + str(respuesta[0]) + " obras.")
+        print ("El costo total de transporte es de " + str(respuesta[1]) + "USD")
+        for x in lt.iterator(respuesta[2]):
+            print(x["Title"])
+        for x in lt.iterator(respuesta[3]):
+            print(x["Title"])
     else:
         sys.exit(0)
 sys.exit(0)

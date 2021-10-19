@@ -58,6 +58,7 @@ def newCatalog():
     catalog["ID"] = lt.newList(datastructure="ARRAY_LIST") #Todos los ids de artworks
     catalog["ArtNat"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5) #Nat-IDs
     catalog["N"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5)
+    catalog["Department"] = mp.newMap(numelements=200, maptype= "PROBING", loadfactor= 0.5) #Catalogo con los medios de las artworks
     return catalog 
 
 # Funciones para agregar informacion a los catalogos
@@ -126,6 +127,18 @@ def addNationalitys(catalog, artist):
         lista = mp.get(catalog["Nacionalidades"], artist["Nationality"])["value"]
         lt.addLast(lista, artist["ConstituentID"])
         mp.put(catalog["Nacionalidades"], artist["Nationality"], lista)
+
+def addDepartment(catalog, artwork):  
+    presente = mp.contains(catalog["Department"], artwork["Department"])
+    if not presente:
+        if artwork["Department"] != "" and artwork["Department"] != None:
+            lista = lt.newList(datastructure="ARRAY_LIST")
+            lt.addLast(lista, artwork)
+            mp.put(catalog["Department"], artwork["Department"], lista)
+    else:
+        lista = mp.get(catalog["Department"], artwork["Department"])["value"]
+        lt.addLast(lista, artwork)
+        mp.put(catalog["Department"], artwork["Department"], lista)
 
 
 
@@ -406,3 +419,100 @@ def printArtMed(catalog, id, med):
             print("|"+i["Title"].center(105)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | "+i["Dimensions"].center(74)+" | ")
             print("+"+("-"*217)+"+")
     
+def requerimiento5(catalog, department):
+    departamentolista = mp.get(catalog["Department"], department)["value"]
+    #El tamañodepartamento es para sacarlo por respuesta, se da con el size de la lista creada que contiene los departamentos.
+    tamañodepartamento = lt.size(departamentolista)
+    #Se cre la variable que va a contener el costo.
+    costototal = float(0)
+    #Se hace un recorrido en la lista departamentolista que tiene todas las obras pertenecientes a un departamento.
+    for obra in lt.iterator(departamentolista):
+        if obra["Circumference (cm)"] == None or obra["Circumference (cm)"] == "":
+            obra["Circumference (cm)"] = 0
+        if obra["Depth (cm)"] == None or obra["Depth (cm)"] == "":
+            obra["Depth (cm)"] = 0
+        if obra["Diameter (cm)"] == None or obra["Diameter (cm)"] == "":
+            obra["Diameter (cm)"] = 0
+        if obra["Height (cm)"] == None or obra["Height (cm)"] == "":
+            obra["Height (cm)"] = 0
+        if obra["Length (cm)"] == None or obra["Length (cm)"] == "":
+            obra["Length (cm)"] = 0
+        if obra["Weight (kg)"] == None or obra["Weight (kg)"] == "":
+            obra["Weight (kg)"] = 0
+        if obra["Width (cm)"] == None or obra["Width (cm)"] == "":
+            obra["Width (cm)"] = 0
+        #Se crean las variables par acada valor, el costo por defecto y el costo mayor que es el que retornará, aparte se crea el costo multiplicar que es el valor dado en el requerimiento.
+        #Es de aclarar que como se piden los costos por metro, y todos los datos entran en cm, se hace el factor de conversión de cm a metros en cada operación.
+        costokilo = float(0)
+        costoarea = float(0)
+        costovolumen = float(0)
+        costodefecto = 48.00
+        costomayor = float(0)
+        costomultiplicar = 72.00
+        # Costo por kilo. Primero se calcula el costo por kilo.
+        if obra["Weight (kg)"] != 0:
+            costokilo = costomultiplicar * float(obra["Weight (kg)"])
+        #Circulo o esféra. Si tiene diametro, debe ser un circulo o esféra, para eso son formulas diferentes.
+        if obra["Diameter (cm)"] != 0:
+            #área. Si no tiene alto es decir que no tiene grosor, así que es plano y se saca área.
+            if obra["Height (cm)"] == 0: 
+                radio = ((float(obra["Diameter (cm)"]) * (1/100))/2)
+                aream = (radio*radio)*3.1416
+                costoarea = costomultiplicar * aream
+            #volumen. Si tiene alto es decir que tiene volúmen, se saca el volúmen.
+            else: 
+                radio = ((float(obra["Diameter (cm)"]) * (1/100))/2)
+                volumen = (radio*radio)*float(obra["Height (cm)"])*3.1416
+                costovolumen = volumen * costomultiplicar
+        #Cuadro o bloque. Si no tiene diametro se entiende que es un cubo o cuadrado.
+
+        if obra["Height (cm)"] != 0  or obra["Length (cm)"] != 0:
+            #Con length
+            if obra["Length (cm)"] != 0:
+                largo = float(obra["Length (cm)"]) * (1/100)
+                if obra["Width (cm)"] != 0 :
+                    ancho = float(obra["Width (cm)"]) * (1/100)
+                    area= largo*ancho
+                    if obra["Depth (cm)"] != 0:
+                        profundidad = float(obra["Depth (cm)"]) * (1/100)
+                        volumen = area*profundidad
+                        costovolumen = volumen * costomultiplicar
+                    if costovolumen == 0:
+                        costoarea = area*costomultiplicar
+            #Con height
+            if obra["Height (cm)"] != 0:
+                largo = float(obra["Height (cm)"]) * (1/100)
+                if obra["Width (cm)"] != 0 :
+                    ancho = float(obra["Width (cm)"]) * (1/100)
+                    area= largo*ancho
+                    if obra["Depth (cm)"] != 0:
+                        profundidad = float(obra["Depth (cm)"]) * (1/100)
+                        volumen = area*profundidad
+                        costovolumen = volumen * costomultiplicar
+                    if costovolumen == 0:
+                        costoarea = area*costomultiplicar
+        #Se evalua el costo mayor de los 3 posibles.
+        costomayor = max(costovolumen,costoarea,costokilo)
+        #Costo mayor cuando no hay datos suficientes.
+        if costoarea == 0 and costovolumen == 0 and costokilo ==0:
+            costomayor = costodefecto
+        #Se agrega una nueva información a la obra, su costo. 
+        obra["Costo"] = costomayor
+        #Se suma al costo total el costo de la obra.
+        costototal += costomayor
+    #Se hace un ordenamiento con merge sort para obtener los mas caros, y mas antiguos.
+    mascaros = ms.sort(departamentolista, cmpfunctionmascaros)
+    mascaros = lt.subList(mascaros,1,5)
+    masviejos = ms.sort(departamentolista, cmpfunctionantiguedad)
+    masviejos = lt.subList(masviejos,1,5)
+    respuesta = (tamañodepartamento,costototal,mascaros,masviejos)
+    return respuesta
+
+def cmpfunctionmascaros(element1, element2):
+    return element1["Costo"] > element2["Costo"]
+def cmpfunctionantiguedad(element1,element2):
+    if element1["Date"] == "" or element1["Date"] == None:
+        element1["Date"]= "9999"
+    if element2["Date"] == "" or element2["Date"] == None:
+        element2["Date"] = "9999" 
+    return element1["Date"] < element2["Date"]

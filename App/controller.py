@@ -43,6 +43,7 @@ def loadArtists(catalog):
         model.addArtists(catalog, artist)
         model.ids(catalog, artist)
         model.Nat(catalog, artist)
+        
 
 def loadArtworks(catalog):
     awfile = cf.data_dir + "Artworks-utf8-small.csv"
@@ -55,6 +56,7 @@ def loadArtworks(catalog):
         model.mediumartists(catalog, aw)
         model.NatArt(catalog, aw)
         model.a(catalog, aw)
+        model.addDepartment(catalog, aw)
         
 
 #Funciones de requerimientos y ordenamientos
@@ -85,3 +87,6 @@ def printArtMed(catalog, id, med):
 
 def printNats(catalog, Nat):
     model.printNats(catalog, Nat)  
+
+def requerimiento5(catalog,department):
+    return model.requerimiento5(catalog,department)
