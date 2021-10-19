@@ -45,10 +45,8 @@ def newCatalog():
                'artworks': None,
                }
     catalog["artists"] = mp.newMap(numelements = 1100, maptype="PROBING", loadfactor= 0.75 ) #ID-InfoArtists
-    catalog["artworks"] = mp.newMap(numelements = 3000, maptype="PROBING", loadfactor= 0.75 ) 
-    catalog["aw"] = mp.newMap(numelements = 3000, maptype="PROBING", loadfactor= 0.75 ) #ID-InfoArtworks
+    catalog["artworks"] = mp.newMap(numelements = 3000, maptype="PROBING", loadfactor= 0.75 ) #ID-InfoArtworks
     catalog["Medios"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 ) #Medio-TitleObras
-    catalog["Nacionalidades"] = mp.newMap(numelements = 400, maptype="PROBING", loadfactor= 0.75 ) # Nat-IDs
     catalog["Obras"] = mp.newMap(numelements = 200, maptype="PROBING", loadfactor= 0.80 ) #TitleObra-Fecha
     catalog["NacimientoArtistas"] = mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5) #BeginDate-InfoArtistas
     catalog["DateAcquired"] = mp.newMap(numelements= 191, maptype="PROBING", loadfactor= 0.5) #DateAquired-InfoArtistas
@@ -57,7 +55,6 @@ def newCatalog():
     catalog["Nat"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #ID-Nat
     catalog["ID"] = lt.newList(datastructure="ARRAY_LIST") #Todos los ids de artworks
     catalog["ArtNat"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5) #Nat-IDs
-    catalog["N"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5)
     catalog["Department"] = mp.newMap(numelements=200, maptype= "PROBING", loadfactor= 0.5) #Catalogo con los medios de las artworks
     return catalog 
 
@@ -66,42 +63,25 @@ def addArtists(catalog,artist):
     obras = lt.newList(datastructure="ARRAY_LIST")
     artist["Obras"] = obras
     mp.put(catalog["artists"], artist["ConstituentID"], artist)
-    addNationalitys(catalog,artist)
     addBeginDate(catalog,artist)
     
 def fechas(catalog, artwork):
     mp.put(catalog["Obras"], artwork["Title"], artwork["Date"])
 
-def addArtworks(catalog,artwork):
-    mp.put(catalog["artworks"], artwork["ObjectID"], artwork)
-    listaartistas = artwork["ConstituentID"].split(",")
-    for artista in listaartistas:
-        artista = artista.replace(" ", "")
-        artista = artista.replace("[", "")
-        artista = artista.replace("]", "")
-        presente = mp.contains(catalog["artists"], artista)
-        if presente:
-            artistamap = mp.get(catalog["artists"],artista)["value"]
-            lt.addLast(artistamap["Obras"], artwork)
-
-def a(catalog, artwork):   
+def addArtworks(catalog, artwork):   
     listaartistas = artwork["ConstituentID"].strip("[]")  
     listaartistas = listaartistas.replace(" ","")
-    listaartistas = listaartistas.split(",")
-    
+    listaartistas = listaartistas.split(",")   
     for artista in listaartistas:     
-        presente = mp.contains(catalog["aw"], int(artista))
+        presente = mp.contains(catalog["artworks"], int(artista))
         if presente:
-            l = mp.get(catalog["aw"],int(artista))["value"]
+            l = mp.get(catalog["artworks"],int(artista))["value"]
             lt.addLast(l, artwork)
-            mp.put(catalog["aw"],int(artista),l)
+            mp.put(catalog["artworks"],int(artista),l)
         else:
             l = lt.newList(datastructure="ARRAY_LIST")
             lt.addLast(l, artwork)
-            mp.put(catalog["aw"], int(artista),l)
-  
-
-      
+            mp.put(catalog["artworks"], int(artista),l)    
   
 def addMedium(catalog, artwork):  
     presente = mp.contains(catalog["Medios"], artwork["Medium"])
@@ -117,17 +97,6 @@ def addMedium(catalog, artwork):
         lt.addLast(lista, artwork["Title"])
         mp.put(catalog["Medios"], artwork["Medium"], lista)
 
-def addNationalitys(catalog, artist):  
-    presente = mp.contains(catalog["Nacionalidades"], artist["Nationality"])
-    if not presente:
-        lista = lt.newList(datastructure="ARRAY_LIST")
-        lt.addLast(lista, artist["ConstituentID"])
-        mp.put(catalog["Nacionalidades"], artist["Nationality"], lista)
-    else:
-        lista = mp.get(catalog["Nacionalidades"], artist["Nationality"])["value"]
-        lt.addLast(lista, artist["ConstituentID"])
-        mp.put(catalog["Nacionalidades"], artist["Nationality"], lista)
-
 def addDepartment(catalog, artwork):  
     presente = mp.contains(catalog["Department"], artwork["Department"])
     if not presente:
@@ -139,32 +108,6 @@ def addDepartment(catalog, artwork):
         lista = mp.get(catalog["Department"], artwork["Department"])["value"]
         lt.addLast(lista, artwork)
         mp.put(catalog["Department"], artwork["Department"], lista)
-
-
-
-def n(catalog, artwork):      
-    presente = mp.contains(catalog["N"], artwork["Nationality"])
-    if presente:
-        l = mp.get(catalog["N"], artwork["Nationality"])["value"]
-        lt.addLast(l, artwork)
-        mp.put(catalog["N"],artwork["Nationality"],l)
-    else:
-        l = lt.newList(datastructure="ARRAY_LIST")
-        lt.addLast(l, artwork)
-        mp.put(catalog["N"], artwork["Nationality"],l)
-
-def printNats(catalog, Nat):
-    ids = mp.get(catalog["ArtNat"],Nat)["value"]
-    
-    for i in range(0,2):
-        obras = mp.get(catalog["aw"],ids["elements"][i])["value"]
-        for i in lt.iterator(obras):
-            
-            print("|"+i["Title"].center(105)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | "+" | ")
-            print("+"+("-"*217)+"+")
-            
-
-
 
 
 def addBeginDate(catalog,artist):
@@ -370,6 +313,7 @@ def requerimiento2(catalog,begin,end):
     return (totalobras,purchase,listarespuesta3y3)
 
 def requerimiento3(catalog,artist):
+    
     id = mp.get(catalog["ids"], artist)["value"]   
     meds = mp.get(catalog["Medartist"], id)["value"]
     return(id,meds)
@@ -408,7 +352,7 @@ def orden(map):
 #artwork["DateAcquired"] = datetime.strptime(artwork["DateAcquired"], "%Y-%m-%d")
 
 def printArtMed(catalog, id, med):
-    obras = mp.get(catalog["aw"],id)["value"]
+    obras = mp.get(catalog["artworks"],id)["value"]
     print(" ")
     print("+"+("-"*217)+"+")
     print("|" + "Title".center(105)+" | "+ "Date".center(13)+" | "+"Medium".center(15)+" | "+"Dimensions".center(74)+" | ")
@@ -418,6 +362,17 @@ def printArtMed(catalog, id, med):
            
             print("|"+i["Title"].center(105)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | "+i["Dimensions"].center(74)+" | ")
             print("+"+("-"*217)+"+")
+
+def printNats(catalog, Nat):
+    ids = mp.get(catalog["ArtNat"],Nat)["value"]
+    
+    for i in range(0,2):
+        obras = mp.get(catalog["artworks"],ids["elements"][i])["value"]
+        for i in lt.iterator(obras):
+            
+            print("|"+i["Title"].center(105)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | "+" | ")
+            print("+"+("-"*217)+"+")
+            
     
 def requerimiento5(catalog, department):
     departamentolista = mp.get(catalog["Department"], department)["value"]

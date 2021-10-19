@@ -55,7 +55,6 @@ def loadArtworks(catalog):
         model.addDateAcquired(catalog,aw)
         model.mediumartists(catalog, aw)
         model.NatArt(catalog, aw)
-        model.a(catalog, aw)
         model.addDepartment(catalog, aw)
         
 

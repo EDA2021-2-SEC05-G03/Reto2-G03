@@ -65,15 +65,16 @@ while True:
         t2 = process_time()
         time = t2-t1
         print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
-        
 
     elif int(inputs[0]) == 2: 
         begin1 = int(input("Digite el año de nacimiento inicial: "))
         begin2 = int(input("Digite el año de nacimiento final: "))
         respuestas = controller.requerimiento1(catalog, begin1, begin2)
         print("El número total de artistas que nacieron en ese rango de fechas fue de " + str(respuestas[0]))
+        print("+"+("-"*146)+"+")
         for i in lt.iterator(respuestas[1]):
-            print(i["DisplayName"])
+            print("|"+i["DisplayName"].center(65)+" | "+ i["BeginDate"].center(13)+" | "+i["EndDate"].center(15)+" | "+i["Nationality"].center(20)+" | "+i["Gender"].center(20)+" | ")
+            print("+"+("-"*146)+"+")
 
     elif int(inputs[0]) == 3:
         begin = input("Digite la fecha en formato YYYY-MM-DD: ")
@@ -104,8 +105,6 @@ while True:
         
         a = str(orden[1]["elements"][0])
         med = controller.printArtMed(catalog, info[0],a) 
-      
-       
 
     elif int(inputs[0]) == 5:        
         respuestas = controller.requerimiento4(catalog)
@@ -118,7 +117,6 @@ while True:
             print(a.center(30)+"|"+ b.center(7))
             print("-"*39)
             t+=2
-
         c = controller.printNats(catalog, respuestas["elements"][0])
     
     elif int(inputs[0]) == 6:
