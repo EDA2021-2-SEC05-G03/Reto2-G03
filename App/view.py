@@ -64,8 +64,9 @@ while True:
         loadData(catalog)
         t2 = process_time()
         time = t2-t1
-        print("El tiempo para cargar los archivos fue de:", str(time) , "s")    
-    
+        print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
+        
+
     elif int(inputs[0]) == 2: 
         begin1 = int(input("Digite el año de nacimiento inicial: "))
         begin2 = int(input("Digite el año de nacimiento final: "))
@@ -99,7 +100,12 @@ while True:
             b = str(orden[1]["elements"][t+1])
             print(a.center(50)+"|"+b.center(9))
             print("-"*60)
-            t+=2
+            t+=2      
+        
+        a = str(orden[1]["elements"][0])
+        med = controller.printArtMed(catalog, info[0],a) 
+      
+       
 
     elif int(inputs[0]) == 5:        
         respuestas = controller.requerimiento4(catalog)
@@ -112,6 +118,8 @@ while True:
             print(a.center(30)+"|"+ b.center(7))
             print("-"*39)
             t+=2
+
+        c = controller.printNats(catalog, respuestas["elements"][0])
 
     else:
         sys.exit(0)

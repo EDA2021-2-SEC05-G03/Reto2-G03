@@ -26,6 +26,7 @@
 
 
 from DISClib.DataStructures.arraylist import newList
+from DISClib.DataStructures.chaininghashtable import keySet
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -43,18 +44,20 @@ def newCatalog():
     catalog = {'artists': None,
                'artworks': None,
                }
-    catalog["artists"] = mp.newMap(numelements = 1100, maptype="PROBING", loadfactor= 0.75 )
-    catalog["artworks"] = mp.newMap(numelements = 3000, maptype="PROBING", loadfactor= 0.75 )
-    catalog["Medios"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 )
-    catalog["Nacionalidades"] = mp.newMap(numelements = 400, maptype="PROBING", loadfactor= 0.75 )
-    catalog["Obras"] = mp.newMap(numelements = 200, maptype="PROBING", loadfactor= 0.80 )
-    catalog["NacimientoArtistas"] = mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5)
-    catalog["DateAcquired"] = mp.newMap(numelements= 191, maptype="PROBING", loadfactor= 0.5)
-    catalog["Medartist"]= mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5)
-    catalog["ids"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5)
-    catalog["Nat"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5)
-    catalog["ID"] = lt.newList(datastructure="ARRAY_LIST")
-    catalog["ArtNat"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5)
+    catalog["artists"] = mp.newMap(numelements = 1100, maptype="PROBING", loadfactor= 0.75 ) #ID-InfoArtists
+    catalog["artworks"] = mp.newMap(numelements = 3000, maptype="PROBING", loadfactor= 0.75 ) 
+    catalog["aw"] = mp.newMap(numelements = 3000, maptype="PROBING", loadfactor= 0.75 ) #ID-InfoArtworks
+    catalog["Medios"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 ) #Medio-TitleObras
+    catalog["Nacionalidades"] = mp.newMap(numelements = 400, maptype="PROBING", loadfactor= 0.75 ) # Nat-IDs
+    catalog["Obras"] = mp.newMap(numelements = 200, maptype="PROBING", loadfactor= 0.80 ) #TitleObra-Fecha
+    catalog["NacimientoArtistas"] = mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5) #BeginDate-InfoArtistas
+    catalog["DateAcquired"] = mp.newMap(numelements= 191, maptype="PROBING", loadfactor= 0.5) #DateAquired-InfoArtistas
+    catalog["Medartist"]= mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5) #ID-Medios
+    catalog["ids"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #Name_ID
+    catalog["Nat"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #ID-Nat
+    catalog["ID"] = lt.newList(datastructure="ARRAY_LIST") #Todos los ids de artworks
+    catalog["ArtNat"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5) #Nat-IDs
+    catalog["N"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5)
     return catalog 
 
 # Funciones para agregar informacion a los catalogos
@@ -79,6 +82,25 @@ def addArtworks(catalog,artwork):
         if presente:
             artistamap = mp.get(catalog["artists"],artista)["value"]
             lt.addLast(artistamap["Obras"], artwork)
+
+def a(catalog, artwork):   
+    listaartistas = artwork["ConstituentID"].strip("[]")  
+    listaartistas = listaartistas.replace(" ","")
+    listaartistas = listaartistas.split(",")
+    
+    for artista in listaartistas:     
+        presente = mp.contains(catalog["aw"], int(artista))
+        if presente:
+            l = mp.get(catalog["aw"],int(artista))["value"]
+            lt.addLast(l, artwork)
+            mp.put(catalog["aw"],int(artista),l)
+        else:
+            l = lt.newList(datastructure="ARRAY_LIST")
+            lt.addLast(l, artwork)
+            mp.put(catalog["aw"], int(artista),l)
+  
+
+      
   
 def addMedium(catalog, artwork):  
     presente = mp.contains(catalog["Medios"], artwork["Medium"])
@@ -104,6 +126,33 @@ def addNationalitys(catalog, artist):
         lista = mp.get(catalog["Nacionalidades"], artist["Nationality"])["value"]
         lt.addLast(lista, artist["ConstituentID"])
         mp.put(catalog["Nacionalidades"], artist["Nationality"], lista)
+
+
+
+def n(catalog, artwork):      
+    presente = mp.contains(catalog["N"], artwork["Nationality"])
+    if presente:
+        l = mp.get(catalog["N"], artwork["Nationality"])["value"]
+        lt.addLast(l, artwork)
+        mp.put(catalog["N"],artwork["Nationality"],l)
+    else:
+        l = lt.newList(datastructure="ARRAY_LIST")
+        lt.addLast(l, artwork)
+        mp.put(catalog["N"], artwork["Nationality"],l)
+
+def printNats(catalog, Nat):
+    ids = mp.get(catalog["ArtNat"],Nat)["value"]
+    
+    for i in range(0,2):
+        obras = mp.get(catalog["aw"],ids["elements"][i])["value"]
+        for i in lt.iterator(obras):
+            
+            print("|"+i["Title"].center(105)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | "+" | ")
+            print("+"+("-"*217)+"+")
+            
+
+
+
 
 def addBeginDate(catalog,artist):
     presente = mp.contains(catalog["NacimientoArtistas"], int(artist["BeginDate"]))
@@ -163,6 +212,7 @@ def NatArt(catalog, artworks):
         id = i.strip()
         lt.addLast(lista, int(i))
     
+
 def requerimiento4(catalog):
     lista = catalog["ID"]
     nat = catalog["Nat"]
@@ -202,6 +252,7 @@ def requerimiento4(catalog):
                 lt.addLast(ret, f)                       
         num += 1
     return ret
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -342,3 +393,16 @@ def orden(map):
     return (size, lista) 
 
 #artwork["DateAcquired"] = datetime.strptime(artwork["DateAcquired"], "%Y-%m-%d")
+
+def printArtMed(catalog, id, med):
+    obras = mp.get(catalog["aw"],id)["value"]
+    print(" ")
+    print("+"+("-"*217)+"+")
+    print("|" + "Title".center(105)+" | "+ "Date".center(13)+" | "+"Medium".center(15)+" | "+"Dimensions".center(74)+" | ")
+    print("+"+("-"*217)+"+")
+    for i in lt.iterator(obras):
+        if i["Medium"] == med:
+           
+            print("|"+i["Title"].center(105)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | "+i["Dimensions"].center(74)+" | ")
+            print("+"+("-"*217)+"+")
+    

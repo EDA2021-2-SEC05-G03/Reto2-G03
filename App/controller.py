@@ -54,6 +54,7 @@ def loadArtworks(catalog):
         model.addDateAcquired(catalog,aw)
         model.mediumartists(catalog, aw)
         model.NatArt(catalog, aw)
+        model.a(catalog, aw)
         
 
 #Funciones de requerimientos y ordenamientos
@@ -79,3 +80,8 @@ def topMeds(medios):
 def orden(top):
     return model.orden(top)
     
+def printArtMed(catalog, id, med):
+    model.printArtMed(catalog, id, med)  
+
+def printNats(catalog, Nat):
+    model.printNats(catalog, Nat)  
