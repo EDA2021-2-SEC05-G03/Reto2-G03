@@ -42,6 +42,7 @@ def printMenu():
     print ("4. Requerimiento 3: Clasificar las obras de un artista por técnica.")
     print ("5. Requerimiento 4: Clasificar las obras por la nacionalidad de sus artistas.")
     print ("6. Requerimiento 5: Transportar obras de un departamento.")
+    print ("7. Requerimiento 6: Artistas más prolíficos de un periodo.")
     print ("0. Salir")
 
 #Iniciador de catalogos y carga de datos
@@ -65,11 +66,16 @@ while True:
         t2 = process_time()
         time = t2-t1
         print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
-        
+
     elif int(inputs[0]) == 2: 
+        
         begin1 = int(input("Digite el año de nacimiento inicial: "))
         begin2 = int(input("Digite el año de nacimiento final: "))
+        t1 = process_time()
         respuestas = controller.requerimiento1(catalog, begin1, begin2)
+        t2 = process_time()
+        time = t2-t1
+        print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
         print("El número total de artistas que nacieron en ese rango de fechas fue de " + str(respuestas[0]))
         print("Los primeros 3 artistas y los últimos 3 artistas fueron: ")
         print("+"+("-"*232)+"+")
@@ -79,11 +85,15 @@ while True:
         for i in lt.iterator(respuestas[1]):
             print("|"+ i["ConstituentID"].center(20)+" | "+ i["DisplayName"].center(65)+" | "+ i["BeginDate"].center(15)+" | "+i["Nationality"].center(20)+" | "+i["Gender"].center(20)+" | "+ i["ArtistBio"].center(30) + " | " + i["Wiki QID"].center(20) + " | " + i["ULAN"].center(20) + " | ")
             print("+"+("-"*232)+"+")
-
+        
     elif int(inputs[0]) == 3:
         begin = input("Digite la fecha en formato YYYY-MM-DD: ")
         end = input("Digite la fecha en formato YYYY-MM-DD: ")
+        t1 = process_time()
         respuestas = controller.requerimiento2(catalog,begin,end)
+        t2 = process_time()
+        time = t2-t1
+        print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
         print("El número total de obras en el rango deseado es de: " + str(respuestas[0]))
         print("Las obras adquiridas por Purchase es de: " + str(respuestas[1]))
         print("Las primeras 3 y últimas 3 obras de ese rango de tiempo fueron: ")
@@ -102,15 +112,22 @@ while True:
             print("DateAcquired: " + i["DateAcquired"])
             print("URL: " + i["URL"])       
             print("=" * 200)
-
+        
         
     elif int(inputs[0]) == 4: 
         artist =  input("Ingrese el nombre del artista de las obras a clasificar: ")
+        t1 = process_time()
+        
         info = controller.artworksClasification(catalog, artist)
         s = mp.size(info[1])
         print(str(artist) + " identificado con el ID " + str(info[0]) + " tiene un total de " + str(s) + " obras")      
+        t1 = process_time()
         topMeds = controller.topMeds(info[1])
         orden = controller.orden(topMeds)
+        respuestas = controller.requerimiento2(catalog,begin,end)
+        t2 = process_time()
+        time = t2-t1
+        print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
         print("Tiene un total de " + str(orden[0]) + " medios diferentes")
         print("Medio".center(50)+"|"+"Obras".center(9))
         print("-"*60)
@@ -126,7 +143,11 @@ while True:
         med = controller.printArtMed(catalog, info[0],a) 
 
     elif int(inputs[0]) == 5:        
+        t1 = process_time()
         respuestas = controller.requerimiento4(catalog)
+        t2 = process_time()
+        time = t2-t1
+        print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
         print("Nationality".center(30)+"|"+"Artworks".center(7))
         print("-"*39)
         t = 0
@@ -140,7 +161,11 @@ while True:
     
     elif int(inputs[0]) == 6:
         department = input("Digite el departamento a evaluar: ")
+        t1 = process_time()
         respuesta = controller.requerimiento5(catalog,department)
+        t2 = process_time()
+        time = t2-t1
+        print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
         print ("El tamaño del departamento es de " + str(respuesta[0]) + " obras.")
         print ("El costo total de transporte es de " + str(respuesta[1]) + "USD")
         print("Las 5 obras más caras a transportar son:")
@@ -182,9 +207,12 @@ while True:
         begin = int(input("Digite el año de nacimiento inicial: "))
         end = int(input("Digite el año de nacimiento final: "))
         cant = int(input("Ingrese la cantidad de artistas que desea ver: "))
+        t1 = process_time()
         respuestas = controller.requerimiento6(catalog, begin, end)
         top = controller.top(catalog, respuestas,cant)
-
+        t2 = process_time()
+        time = t2-t1
+        print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
     else:
         sys.exit(0)
 sys.exit(0)

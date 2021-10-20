@@ -44,19 +44,19 @@ def newCatalog():
     catalog = {'artists': None,
                'artworks': None,
                }
-    catalog["artists"] = mp.newMap(numelements = 1100, maptype="PROBING", loadfactor= 0.75 ) #ID-InfoArtists
-    catalog["artworks"] = mp.newMap(numelements = 3000, maptype="PROBING", loadfactor= 0.75 ) #ID-InfoArtworks
-    catalog["Medios"] = mp.newMap(numelements = 2000, maptype="PROBING", loadfactor= 0.75 ) #Medio-TitleObras
-    catalog["Obras"] = mp.newMap(numelements = 200, maptype="PROBING", loadfactor= 0.80 ) #TitleObra-Fecha
+    catalog["artists"] = mp.newMap(numelements = 3907, maptype="PROBING", loadfactor= 0.5 ) #ID-InfoArtists
+    catalog["artworks"] = mp.newMap(numelements = 1543, maptype="PROBING", loadfactor= 0.5 ) #ID-InfoArtworks
+    catalog["Medios"] = mp.newMap(numelements = 769, maptype="PROBING", loadfactor= 0.5 ) #Medio-TitleObras
+    catalog["Obras"] = mp.newMap(numelements = 1543, maptype="PROBING", loadfactor= 0.5 ) #TitleObra-Fecha
     catalog["NacimientoArtistas"] = mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5) #BeginDate-InfoArtistas
     catalog["DateAcquired"] = mp.newMap(numelements= 191, maptype="PROBING", loadfactor= 0.5) #DateAquired-InfoArtistas
-    catalog["Medartist"]= mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5) #ID-Medios
-    catalog["ids"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #Name-ID
-    catalog["Nat"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #ID-Nat
+    catalog["Medartist"]= mp.newMap(numelements=3907, maptype="PROBING", loadfactor= 0.5) #ID-Medios
+    catalog["ids"] = mp.newMap(numelements=3907, maptype="PROBING", loadfactor= 0.5) #Name-ID
+    catalog["Nat"] = mp.newMap(numelements=3907, maptype="PROBING", loadfactor= 0.5) #ID-Nat
     catalog["ID"] = lt.newList(datastructure="ARRAY_LIST") #Todos los ids de artworks
-    catalog["ArtNat"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5) #Nat-IDs
-    catalog["Department"] = mp.newMap(numelements=200, maptype= "PROBING", loadfactor= 0.5) #Catalogo con los medios de las artworks
-    catalog["ConstituentName"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #Llave: Constituent ID - Valor: Nombre del artista
+    catalog["ArtNat"] = mp.newMap(numelements=401, maptype="PROBING", loadfactor= 0.5) #Nat-IDs
+    catalog["Department"] = mp.newMap(numelements=23, maptype= "PROBING", loadfactor= 0.5) #Catalogo con los medios de las artworks Dept-Obras
+    catalog["ConstituentName"] = mp.newMap(numelements=3907, maptype="PROBING", loadfactor= 0.5) #Llave: Constituent ID - Valor: Nombre del artista
     return catalog 
 
 # Funciones para agregar informacion a los catalogos
@@ -195,11 +195,12 @@ def requerimiento4(catalog):
     orden = ms.sort(sizes, cmpfunctionrequerimiento3)
     llaves = mp.keySet(catalog["ArtNat"])
     s = lt.size(orden)  
-    s = lt.size(orden)
+    
     ret = lt.newList(datastructure="ARRAY_LIST")
     num = 0  
     while num < s:
         for i in lt.iterator(llaves):
+            
             g = orden["elements"][num]                     
             f = mp.get(catalog["ArtNat"],i)["value"]            
             f = lt.size(f)
@@ -207,8 +208,10 @@ def requerimiento4(catalog):
             
             if f == g:               
                 lt.addLast(ret, k)
-                lt.addLast(ret, f)                       
+                lt.addLast(ret, f)
         num += 1
+    print(ret)                       
+
     return ret
 
 
