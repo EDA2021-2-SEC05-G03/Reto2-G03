@@ -56,6 +56,7 @@ def newCatalog():
     catalog["ID"] = lt.newList(datastructure="ARRAY_LIST") #Todos los ids de artworks
     catalog["ArtNat"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5) #Nat-IDs
     catalog["Department"] = mp.newMap(numelements=200, maptype= "PROBING", loadfactor= 0.5) #Catalogo con los medios de las artworks
+    catalog["ConstituentName"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #Llave: Constituent ID - Valor: Nombre del artista
     return catalog 
 
 # Funciones para agregar informacion a los catalogos
@@ -118,6 +119,9 @@ def addBeginDate(catalog,artist):
         lista = mp.get(catalog["NacimientoArtistas"], int(artist["BeginDate"]))["value"]
         lt.addLast(lista,artist)
         mp.put(catalog["NacimientoArtistas"],int(artist["BeginDate"]),lista)
+
+def AddConstituentName (catalog, artist):
+    mp.put(catalog["ConstituentName"],artist["ConstituentID"], artist["DisplayName"])
 
 def addDateAcquired(catalog, artwork):  
     if artwork["DateAcquired"] == "":
@@ -309,6 +313,8 @@ def requerimiento2(catalog,begin,end):
     for artista in lt.iterator(sublista2):
         lt.addLast(listarespuesta3y3,artista)
     return (totalobras,purchase,listarespuesta3y3)
+
+
 
 def requerimiento3(catalog,artist):
     

@@ -43,6 +43,7 @@ def loadArtists(catalog):
         model.addArtists(catalog, artist)
         model.ids(catalog, artist)
         model.Nat(catalog, artist)
+        model.AddConstituentName(catalog,artist)
         
 
 def loadArtworks(catalog):

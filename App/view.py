@@ -71,10 +71,14 @@ while True:
         begin2 = int(input("Digite el año de nacimiento final: "))
         respuestas = controller.requerimiento1(catalog, begin1, begin2)
         print("El número total de artistas que nacieron en ese rango de fechas fue de " + str(respuestas[0]))
-        print("+"+("-"*146)+"+")
+        print("Los primeros 3 artistas y los últimos 3 artistas fueron: ")
+        print("+"+("-"*232)+"+")
+        print("|"+"ConstituentID".center(20)+" | "+ "DisplayName".center(65)+" | "+"BeginDate".center(15)+" | "+"Nationality".center(20)+" | "+"Gender".center(20)+" | "+"ArtistBio".center(30) + " | " + "Wiki QID".center(20) + " | " + "ULAN".center(20) + " | ")
+        print("+"+("-"*232)+"+")
+
         for i in lt.iterator(respuestas[1]):
-            print("|"+i["DisplayName"].center(65)+" | "+ i["BeginDate"].center(13)+" | "+i["EndDate"].center(15)+" | "+i["Nationality"].center(20)+" | "+i["Gender"].center(20)+" | ")
-            print("+"+("-"*146)+"+")
+            print("|"+ i["ConstituentID"].center(20)+" | "+ i["DisplayName"].center(65)+" | "+ i["BeginDate"].center(15)+" | "+i["Nationality"].center(20)+" | "+i["Gender"].center(20)+" | "+ i["ArtistBio"].center(30) + " | " + i["Wiki QID"].center(20) + " | " + i["ULAN"].center(20) + " | ")
+            print("+"+("-"*232)+"+")
 
     elif int(inputs[0]) == 3:
         begin = input("Digite la fecha en formato YYYY-MM-DD: ")
@@ -82,8 +86,23 @@ while True:
         respuestas = controller.requerimiento2(catalog,begin,end)
         print("El número total de obras en el rango deseado es de: " + str(respuestas[0]))
         print("Las obras adquiridas por Purchase es de: " + str(respuestas[1]))
+        print("Las primeras 3 y últimas 3 obras de ese rango de tiempo fueron: ")
+        print("=" * 200)
         for i in lt.iterator(respuestas[2]):
-            print(i["Title"])
+            print("ObjectID: " + i["ObjectID"])
+            print("Title: " + i["Title"])
+            print("ArtistNames: ")
+            CI = i["ConstituentID"].split(",")
+            for artista in CI: 
+                artista = artista.strip("[] ")
+                print(mp.get(catalog["ConstituentName"], artista)["value"])
+            print("Medium: " + i["Medium"])
+            print("Dimensions: " + i["Dimensions"])
+            print("Date: " + i["Date"])
+            print("DateAcquired: " + i["DateAcquired"])
+            print("URL: " + i["URL"])       
+            print("=" * 200)
+
         
     elif int(inputs[0]) == 4: 
         artist =  input("Ingrese el nombre del artista de las obras a clasificar: ")
@@ -124,10 +143,40 @@ while True:
         respuesta = controller.requerimiento5(catalog,department)
         print ("El tamaño del departamento es de " + str(respuesta[0]) + " obras.")
         print ("El costo total de transporte es de " + str(respuesta[1]) + "USD")
+        print("Las 5 obras más caras a transportar son:")
+        print ("=" * 200)
         for x in lt.iterator(respuesta[2]):
-            print(x["Title"])
+            print("ObjectID: " + x["ObjectID"])
+            print("Title: " + x["Title"])
+            print("ArtistsNames: ")
+            CI = x["ConstituentID"].split(",")
+            for artista in CI: 
+                artista = artista.strip("[] ")
+                print(mp.get(catalog["ConstituentName"], artista)["value"])
+            print("Medium: " + x["Medium"])
+            print("Date: " + x["Date"])
+            print("Dimensions: " + x["Dimensions"])
+            print("Classification: " + x["Classification"] )
+            print("Costo de transporte" + str(x["Costo"]))
+            print("URL: " + x["URL"])
+            print ("=" * 200)
+        print ("Las obras mas antiguas a transportar son: ")
+        print ("=" * 200)
         for x in lt.iterator(respuesta[3]):
-            print(x["Title"])
+            print("ObjectID: " + x["ObjectID"])
+            print("Title: " + x["Title"])
+            print("ArtistsNames: ")
+            CI = x["ConstituentID"].split(",")
+            for artista in CI: 
+                artista = artista.strip("[] ")
+                print(mp.get(catalog["ConstituentName"], artista)["value"])
+            print("Medium: " + x["Medium"])
+            print("Date: " + x["Date"])
+            print("Dimensions: " + x["Dimensions"])
+            print("Classification: " + x["Classification"] )
+            print("Costo de transporte" + str(x["Costo"]))
+            print("URL: " + x["URL"])
+            print ("=" * 200)
     
     elif int(inputs[0])== 7:
         begin = int(input("Digite el año de nacimiento inicial: "))
