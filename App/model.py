@@ -51,7 +51,7 @@ def newCatalog():
     catalog["NacimientoArtistas"] = mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5) #BeginDate-InfoArtistas
     catalog["DateAcquired"] = mp.newMap(numelements= 191, maptype="PROBING", loadfactor= 0.5) #DateAquired-InfoArtistas
     catalog["Medartist"]= mp.newMap(numelements=1667, maptype="PROBING", loadfactor= 0.5) #ID-Medios
-    catalog["ids"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #Name_ID
+    catalog["ids"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #Name-ID
     catalog["Nat"] = mp.newMap(numelements=2000, maptype="PROBING", loadfactor= 0.5) #ID-Nat
     catalog["ID"] = lt.newList(datastructure="ARRAY_LIST") #Todos los ids de artworks
     catalog["ArtNat"] = mp.newMap(numelements=400, maptype="PROBING", loadfactor= 0.5) #Nat-IDs
@@ -60,9 +60,7 @@ def newCatalog():
 
 # Funciones para agregar informacion a los catalogos
 def addArtists(catalog,artist):
-    obras = lt.newList(datastructure="ARRAY_LIST")
-    artist["Obras"] = obras
-    mp.put(catalog["artists"], artist["ConstituentID"], artist)
+    mp.put(catalog["artists"], int(artist["ConstituentID"]), artist)
     addBeginDate(catalog,artist)
     
 def fechas(catalog, artwork):
@@ -370,7 +368,7 @@ def printNats(catalog, Nat):
         obras = mp.get(catalog["artworks"],ids["elements"][i])["value"]
         for i in lt.iterator(obras):
             
-            print("|"+i["Title"].center(105)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | "+" | ")
+            print("|"+i["Title"].center(60)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | ")
             print("+"+("-"*217)+"+")
             
     
@@ -471,3 +469,72 @@ def cmpfunctionantiguedad(element1,element2):
     if element2["Date"] == "" or element2["Date"] == None:
         element2["Date"] = "9999" 
     return element1["Date"] < element2["Date"]
+
+def requerimiento6(catalog, begin, end):
+    listaartistas = lt.newList(datastructure="ARRAY_LIST")
+    for año in range(begin,(end+1)):
+        listaartistasmp = mp.get(catalog["NacimientoArtistas"], año)["value"]
+        for agregar in lt.iterator(listaartistasmp):
+            lt.addLast(listaartistas,agregar)
+    
+    listaartistas = ms.sort(listaartistas,cmpfunctionrequerimiento1)
+    obras = catalog["artworks"]
+   
+    obrascount = lt.newList(datastructure="ARRAY_LIST")
+    ids = lt.newList(datastructure="ARRAY_LIST")
+    for i in lt.iterator(listaartistas):    
+        id = i["ConstituentID"]
+        
+        l = mp.get(obras, int(id))
+       
+        if l == None:
+            None
+        else:
+            s = lt.size(l["value"])
+            lt.addLast(ids, int(id))
+            lt.addLast(obrascount,s)
+
+    size = lt.size(obrascount)
+    sub = lt.subList(obrascount,0,size)
+    sub = sub.copy()
+    
+    orden = ms.sort(sub, cmpfunction=cmpfun6)
+    lista = lt.newList(datastructure="ARRAY_LIST")
+    n = 0
+   
+    while n < size:      
+        pos = lt.isPresent(obrascount, orden["elements"][n])
+        key = lt.getElement(ids,pos)      
+        
+        lt.addLast(lista, key)
+        lt.addLast(lista, orden["elements"][n])
+        lt.deleteElement(obrascount, pos)
+        lt.deleteElement(ids, pos)
+        n +=1
+    return lista
+
+def topArtist(catalog, lista, cant):
+    info = catalog["artists"]
+    info2 = catalog["artworks"]
+    meds = catalog["Medartist"]
+    print("+"+("-"*80)+"+")
+    for i in range(0,(cant*2),2):       
+        artist = lista["elements"][i]            
+        list = mp.get(info, int(artist))["value"]       
+        print("|"+list["ConstituentID"].center(10)+" | "+ list["DisplayName"].center(30)+" | "+list["BeginDate"].center(15)+" | "+list["Gender"].center(15)+" | ")
+        print("+"+("-"*80)+"+")
+
+    list = mp.get(info2, lista["elements"][0])["value"]       
+    obras = lt.size(mp.get(meds,lista["elements"][0])["value"])
+
+    print("El artista "+ str(mp.get(info, int(lista["elements"][0]))["value"]["DisplayName"])+" tiene un total de "+ str(obras)+" obras en el museo.") 
+    artist = lista["elements"][0]   
+    list = mp.get(info2, int(artist))["value"]
+    print("+"+("-"*147)+"+")
+    for i in range(0,5):
+   
+        print("|"+list["elements"][i]["Title"].center(62)+" | "+ list["elements"][i]["Medium"].center(30)+" | "+list["elements"][i]["Date"].center(15)+" | "+list["elements"][i]["DateAcquired"].center(15)+ "|" + list["elements"][i]["Department"].center(15)+"| ")
+        print("+"+("-"*147)+"+")
+
+def cmpfun6(val1,val2):
+    return val1 > val2

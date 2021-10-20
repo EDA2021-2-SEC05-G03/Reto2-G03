@@ -89,3 +89,9 @@ def printNats(catalog, Nat):
 
 def requerimiento5(catalog,department):
     return model.requerimiento5(catalog,department)
+
+def requerimiento6(catalog, begin, end):
+    return model.requerimiento6(catalog, begin, end)
+
+def top(catalog,lista, cant):
+    return model.topArtist(catalog, lista, cant)

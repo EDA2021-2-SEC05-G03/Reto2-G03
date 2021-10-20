@@ -65,7 +65,7 @@ while True:
         t2 = process_time()
         time = t2-t1
         print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
-
+        
     elif int(inputs[0]) == 2: 
         begin1 = int(input("Digite el año de nacimiento inicial: "))
         begin2 = int(input("Digite el año de nacimiento final: "))
@@ -128,6 +128,14 @@ while True:
             print(x["Title"])
         for x in lt.iterator(respuesta[3]):
             print(x["Title"])
+    
+    elif int(inputs[0])== 7:
+        begin = int(input("Digite el año de nacimiento inicial: "))
+        end = int(input("Digite el año de nacimiento final: "))
+        cant = int(input("Ingrese la cantidad de artistas que desea ver: "))
+        respuestas = controller.requerimiento6(catalog, begin, end)
+        top = controller.top(catalog, respuestas,cant)
+
     else:
         sys.exit(0)
 sys.exit(0)
