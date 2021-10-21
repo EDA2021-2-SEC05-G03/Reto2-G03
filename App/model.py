@@ -169,51 +169,6 @@ def NatArt(catalog, artworks):
     for i in ids:
         id = i.strip()
         lt.addLast(lista, int(i))
-    
-
-def requerimiento4(catalog):
-    lista = catalog["ID"]
-    nat = catalog["Nat"]
-    for i in lt.iterator(lista):
-        n = mp.get(nat, i)["value"]
-        presente = mp.contains(catalog["ArtNat"], n)
-        if not presente:
-            lista = lt.newList(datastructure="ARRAY_LIST")          
-            lt.addLast(lista, i)
-            mp.put(catalog["ArtNat"], n,lista)
-        else:
-            lista = mp.get(catalog["ArtNat"], n)["value"]
-            lt.addLast(lista,i)
-            mp.put(catalog["ArtNat"], n, lista)    
-    valores = mp.valueSet(catalog["ArtNat"])
-    sizes = lt.newList("ARRAY_LIST")
-
-    for i in lt.iterator(valores):
-        size = i["size"]       
-        lt.addLast(sizes,size)
-    
-    orden = ms.sort(sizes, cmpfunctionrequerimiento3)
-    llaves = mp.keySet(catalog["ArtNat"])
-    s = lt.size(orden)  
-    
-    ret = lt.newList(datastructure="ARRAY_LIST")
-    num = 0  
-    while num < s:
-        for i in lt.iterator(llaves):
-            
-            g = orden["elements"][num]                     
-            f = mp.get(catalog["ArtNat"],i)["value"]            
-            f = lt.size(f)
-            k = mp.get(catalog["ArtNat"],i)["key"]
-            
-            if f == g:               
-                lt.addLast(ret, k)
-                lt.addLast(ret, f)
-        num += 1
-    print(ret)                       
-
-    return ret
-
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -229,6 +184,25 @@ def cmpfunctionrequerimiento2(date1,date2):
 
 def cmpfunctionrequerimiento3(med1,med2):
     return med1 > med2
+
+def cmpfun6(val1,val2):
+    return val1 > val2
+
+def cmpfun(date1,date2):
+    if date1 == "" or date1 == None:
+        date1 = 0
+    if date2 == "" or date2 == None:
+        date2 = 0
+        
+def cmpfunctionmascaros(element1, element2):
+    return element1["Costo"] > element2["Costo"]
+
+def cmpfunctionantiguedad(element1,element2):
+    if element1["Date"] == "" or element1["Date"] == None:
+        element1["Date"]= "9999"
+    if element2["Date"] == "" or element2["Date"] == None:
+        element2["Date"] = "9999" 
+    return element1["Date"] < element2["Date"]
 
 #Funciones de los requerimientos
 
@@ -261,12 +235,6 @@ def obrasantiguas(catalog, medio):
         lt.deleteElement(llaves,pos2)
         
     print(l)
-
-def cmpfun(date1,date2):
-    if date1 == "" or date1 == None:
-        date1 = 0
-    if date2 == "" or date2 == None:
-        date2 = 0
 
     return int(date1) < int(date2)
 
@@ -356,8 +324,6 @@ def orden(map):
         lt.deleteElement(llaves, pos)
     return (size, lista) 
 
-#artwork["DateAcquired"] = datetime.strptime(artwork["DateAcquired"], "%Y-%m-%d")
-
 def printArtMed(catalog, id, med):
     obras = mp.get(catalog["artworks"],id)["value"]
     print(" ")
@@ -380,7 +346,47 @@ def printNats(catalog, Nat):
             print("|"+i["Title"].center(60)+" | "+ i["Date"].center(13)+" | "+i["Medium"].center(15)+" | ")
             print("+"+("-"*217)+"+")
             
+def requerimiento4(catalog):
+    lista = catalog["ID"]
+    nat = catalog["Nat"]
+    for i in lt.iterator(lista):
+        n = mp.get(nat, i)["value"]
+        presente = mp.contains(catalog["ArtNat"], n)
+        if not presente:
+            lista = lt.newList(datastructure="ARRAY_LIST")          
+            lt.addLast(lista, i)
+            mp.put(catalog["ArtNat"], n,lista)
+        else:
+            lista = mp.get(catalog["ArtNat"], n)["value"]
+            lt.addLast(lista,i)
+            mp.put(catalog["ArtNat"], n, lista)    
+    valores = mp.valueSet(catalog["ArtNat"])
+    sizes = lt.newList("ARRAY_LIST")
+
+    for i in lt.iterator(valores):
+        size = i["size"]       
+        lt.addLast(sizes,size)
     
+    orden = ms.sort(sizes, cmpfunctionrequerimiento3)
+    llaves = mp.keySet(catalog["ArtNat"])
+    s = lt.size(orden)  
+    
+    ret = lt.newList(datastructure="ARRAY_LIST")
+    num = 0  
+    while num < s:
+        for i in lt.iterator(llaves):
+            
+            g = orden["elements"][num]                     
+            f = mp.get(catalog["ArtNat"],i)["value"]            
+            f = lt.size(f)
+            k = mp.get(catalog["ArtNat"],i)["key"]
+            
+            if f == g:               
+                lt.addLast(ret, k)
+                lt.addLast(ret, f)
+        num += 1                      
+    return ret
+
 def requerimiento5(catalog, department):
     departamentolista = mp.get(catalog["Department"], department)["value"]
     #El tamañodepartamento es para sacarlo por respuesta, se da con el size de la lista creada que contiene los departamentos.
@@ -470,15 +476,6 @@ def requerimiento5(catalog, department):
     respuesta = (tamañodepartamento,costototal,mascaros,masviejos)
     return respuesta
 
-def cmpfunctionmascaros(element1, element2):
-    return element1["Costo"] > element2["Costo"]
-def cmpfunctionantiguedad(element1,element2):
-    if element1["Date"] == "" or element1["Date"] == None:
-        element1["Date"]= "9999"
-    if element2["Date"] == "" or element2["Date"] == None:
-        element2["Date"] = "9999" 
-    return element1["Date"] < element2["Date"]
-
 def requerimiento6(catalog, begin, end):
     listaartistas = lt.newList(datastructure="ARRAY_LIST")
     for año in range(begin,(end+1)):
@@ -545,5 +542,4 @@ def topArtist(catalog, lista, cant):
         print("|"+list["elements"][i]["Title"].center(62)+" | "+ list["elements"][i]["Medium"].center(30)+" | "+list["elements"][i]["Date"].center(15)+" | "+list["elements"][i]["DateAcquired"].center(15)+ "|" + list["elements"][i]["Department"].center(15)+"| ")
         print("+"+("-"*147)+"+")
 
-def cmpfun6(val1,val2):
-    return val1 > val2
+

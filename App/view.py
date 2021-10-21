@@ -78,13 +78,13 @@ while True:
         print("El tiempo para cargar los archivos fue de:", str(time) , "s") 
         print("El número total de artistas que nacieron en ese rango de fechas fue de " + str(respuestas[0]))
         print("Los primeros 3 artistas y los últimos 3 artistas fueron: ")
-        print("+"+("-"*232)+"+")
-        print("|"+"ConstituentID".center(20)+" | "+ "DisplayName".center(65)+" | "+"BeginDate".center(15)+" | "+"Nationality".center(20)+" | "+"Gender".center(20)+" | "+"ArtistBio".center(30) + " | " + "Wiki QID".center(20) + " | " + "ULAN".center(20) + " | ")
-        print("+"+("-"*232)+"+")
+        print("+"+("-"*217)+"+")
+        print("|"+"ConstituentID".center(18)+" | "+ "DisplayName".center(61)+" | "+"BeginDate".center(15)+" | "+"Nationality".center(20)+" | "+"Gender".center(15)+" | "+"ArtistBio".center(30) + " | " + "Wiki QID".center(16) + " | " + "ULAN".center(20) + " | ")
+        print("+"+("-"*217)+"+")
 
         for i in lt.iterator(respuestas[1]):
-            print("|"+ i["ConstituentID"].center(20)+" | "+ i["DisplayName"].center(65)+" | "+ i["BeginDate"].center(15)+" | "+i["Nationality"].center(20)+" | "+i["Gender"].center(20)+" | "+ i["ArtistBio"].center(30) + " | " + i["Wiki QID"].center(20) + " | " + i["ULAN"].center(20) + " | ")
-            print("+"+("-"*232)+"+")
+            print("|"+ i["ConstituentID"].center(18)+" | "+ i["DisplayName"].center(61)+" | "+ i["BeginDate"].center(15)+" | "+i["Nationality"].center(20)+" | "+i["Gender"].center(15)+" | "+ i["ArtistBio"].center(30) + " | " + i["Wiki QID"].center(16) + " | " + i["ULAN"].center(20) + " | ")
+            print("+"+("-"*217)+"+")
         
     elif int(inputs[0]) == 3:
         begin = input("Digite la fecha en formato YYYY-MM-DD: ")
